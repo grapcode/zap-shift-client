@@ -8,6 +8,9 @@ import Login from '../pages/Auth/Login';
 import Register from '../pages/Auth/Register';
 import Rider from '../pages/Rider/Rider';
 import PrivateRoute from './PrivateRoute';
+import SendParcel from '../pages/SendParcel';
+import DashboardLayout from '../layout/DashboardLayout';
+import MyParcels from '../pages/Dashboard/MyParcels';
 
 export const router = createBrowserRouter([
   {
@@ -36,6 +39,15 @@ export const router = createBrowserRouter([
         ),
       },
       {
+        path: '/sendParcel',
+        element: (
+          <PrivateRoute>
+            <SendParcel />
+          </PrivateRoute>
+        ),
+        loader: () => fetch('serviceCenters.json').then((res) => res.json()),
+      },
+      {
         path: '/*',
         element: <h2>Error 404</h2>,
       },
@@ -55,6 +67,22 @@ export const router = createBrowserRouter([
       {
         path: 'register',
         element: <Register />,
+      },
+    ],
+  },
+
+  // ❌ Dashboard Layout
+  {
+    path: 'dashboard',
+    element: (
+      <PrivateRoute>
+        <DashboardLayout />
+      </PrivateRoute>
+    ),
+    children: [
+      {
+        path: 'my-parcels',
+        element: <MyParcels />,
       },
     ],
   },
