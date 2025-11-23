@@ -80,6 +80,7 @@ const AuthProvider = ({ children }) => {
       // console.log(user);
       setUser(currUser);
       setLoading(false);
+      console.log(currUser);
     });
     return () => {
       unsubscribe();

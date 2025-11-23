@@ -5,6 +5,7 @@ import { Link, useNavigate } from 'react-router';
 import useAuth from '../../hooks/useAuth';
 import { toast } from 'react-toastify';
 import axios from 'axios';
+import useAxiosSecure from '../../hooks/useAxiosSecure';
 
 const Register = () => {
   const {
@@ -17,6 +18,8 @@ const Register = () => {
 
   // 🔰 After successful signup, navigate to login page
   const navigate = useNavigate();
+
+  const axiosSecure = useAxiosSecure();
 
   // ⚡ show password
   const [show, setShow] = useState(false);
@@ -42,12 +45,24 @@ const Register = () => {
           import.meta.env.VITE_image_host_key
         }`;
         axios.post(imageAPI_URL, formData).then((res) => {
-          console.log('after image upload', res.data.data.url);
+          const photoURL = res.data.data.url;
 
+          // create user in the database
+          const userInfo = {
+            displayName: data.name,
+            email: data.email,
+            photoURL: photoURL,
+          };
+
+          axiosSecure.post('/users', userInfo).then((res) => {
+            if (res.data.insertedId) {
+              console.log('user created in the data base');
+            }
+          });
           // 3. update user profile to firebase
           const userProfile = {
             displayName: data.name,
-            photoURL: res.data.data.url,
+            photoURL: photoURL,
           };
 
           // 4. updateUserProfile to firebase

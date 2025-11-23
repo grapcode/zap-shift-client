@@ -5,6 +5,7 @@ import { FcGoogle } from 'react-icons/fc';
 import { Link, useLocation, useNavigate } from 'react-router';
 import useAuth from '../../hooks/useAuth';
 import { toast } from 'react-toastify';
+import useAxiosSecure from '../../hooks/useAxiosSecure';
 
 const Login = () => {
   const {
@@ -14,6 +15,8 @@ const Login = () => {
   } = useForm();
 
   const { signInUser, signInGoogle, user, setUser, setLoading } = useAuth();
+
+  const axiosSecure = useAxiosSecure();
 
   // 🔰 After successful signin, navigate to card id
   const navigate = useNavigate();
@@ -61,6 +64,18 @@ const Login = () => {
         toast.success('google signin successful');
         setUser(res.user);
         navigate('/');
+
+        // create user in the database
+        const userInfo = {
+          displayName: res.user.displayName,
+          email: res.user.email,
+          photoURL: res.user.photoURL,
+        };
+
+        axiosSecure.post('/users', userInfo).then((res) => {
+          console.log('user data has been stored', res.data);
+          navigate('/');
+        });
       })
       .catch((error) => {
         console.log(error);

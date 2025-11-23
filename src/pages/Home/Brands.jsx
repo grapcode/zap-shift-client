@@ -30,7 +30,7 @@ const Brands = () => {
         We've helped thousands of sales teams
       </h2>
       <Swiper
-        slidesPerView={4}
+        slidesPerView={3}
         centeredSlides={true}
         spaceBetween={30}
         grabCursor={true}

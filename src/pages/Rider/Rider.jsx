@@ -1,17 +1,51 @@
 import React from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, useWatch } from 'react-hook-form';
 import riderImg from '../../assets/agent-pending.png'; // তোমার ইমেজ পাথ বসাও
+import useAuth from '../../hooks/useAuth';
+import useAxiosSecure from '../../hooks/useAxiosSecure';
+import { useLoaderData } from 'react-router';
+import Swal from 'sweetalert2';
 
 export default function Rider() {
   const {
     register,
     handleSubmit,
+    control,
     formState: { errors },
   } = useForm();
 
-  const onSubmit = (data) => {
+  const { user } = useAuth();
+  const axiosSecure = useAxiosSecure();
+
+  // const navigate = useNavigate();
+
+  const serviceCenters = useLoaderData();
+  const regionsDuplicate = serviceCenters.map((c) => c.region);
+  const regions = [...new Set(regionsDuplicate)];
+
+  const riderRegion = useWatch({ control, name: 'region' });
+
+  const handleRiderApplication = (data) => {
     console.log('Rider submit:', data);
     // API call or further actions
+    axiosSecure.post('/riders', data).then((res) => {
+      if (res.data.insertedId) {
+        Swal.fire({
+          position: 'top-end',
+          icon: 'success',
+          title:
+            'Your application has been submitted. We will reach to you in 145 days',
+          showConfirmButton: false,
+          timer: 2000,
+        });
+      }
+    });
+  };
+
+  const districtsByRegion = (region) => {
+    const regionDistricts = serviceCenters.filter((c) => c.region === region);
+    const districts = regionDistricts.map((d) => d.district);
+    return districts;
   };
 
   return (
@@ -25,115 +59,174 @@ export default function Rider() {
           time, every time.
         </p>
 
-        <h3 className="text-xl font-semibold mb-4">Tell us about yourself</h3>
+        <h3 className="text-xl font-semibold mb-4">textl us about yourself</h3>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
+        <form
+          onSubmit={handleSubmit(handleRiderApplication)}
+          className="space-y-6"
+        >
+          {/* ❌ Rider & Receiver */}
+          <div className="grid md:grid-cols-2 gap-10">
+            {/* Rider */}
             <div>
-              <label className="label">Your Name</label>
-              <input
-                type="text"
-                {...register('name', { required: true })}
-                className="input input-bordered w-full"
-                placeholder="Your Name"
-              />
-              {errors.name && (
-                <p className="text-red-500 text-sm">Name is required.</p>
-              )}
+              <h3 className="text-lg font-semibold mb-4">Rider Details</h3>
+
+              <div className="space-y-4">
+                <div>
+                  <label className="label">Rider Name</label>
+                  <input
+                    type="text"
+                    {...register('name', { required: true })}
+                    defaultValue={user?.displayName}
+                    className="input input-bordered w-full"
+                    placeholder="rider Name"
+                  />
+                  {errors.name && (
+                    <p className="text-red-500 text-sm">
+                      Rider name is required.
+                    </p>
+                  )}
+                </div>
+
+                <div>
+                  <label className="label">Rider Phone No</label>
+                  <input
+                    type="text"
+                    {...register('phone', { required: true })}
+                    className="input input-bordered w-full"
+                    placeholder="rider Phone No"
+                  />
+                  {errors.phone && (
+                    <p className="text-red-500 text-sm">
+                      Phone number is required.
+                    </p>
+                  )}
+                </div>
+
+                <div>
+                  <label className="label">Rider Email</label>
+                  <input
+                    type="text"
+                    {...register('email', { required: true })}
+                    defaultValue={user?.email}
+                    className="input input-bordered w-full"
+                    placeholder="Rider Email"
+                  />
+                  {errors.email && (
+                    <p className="text-red-500 text-sm">Email is required.</p>
+                  )}
+                </div>
+
+                {/* 💥 Rider Regions */}
+                <div>
+                  <label className="label">Rider Regions</label>
+                  <select
+                    {...register('region', { required: true })}
+                    defaultValue="Pick a region"
+                    className="select select-bordered w-full"
+                  >
+                    <option disabled={true}>Pick a region</option>
+                    {regions.map((r, i) => (
+                      <option key={i} value={r}>
+                        {r}
+                      </option>
+                    ))}
+                  </select>
+                  {errors.region && (
+                    <p className="text-red-500 text-sm">Select a district.</p>
+                  )}
+                </div>
+
+                {/* 💥Rider District */}
+                <div>
+                  <label className="label">Rider District</label>
+                  <select
+                    {...register('district', { required: true })}
+                    defaultValue="Pick a District"
+                    className="select select-bordered w-full"
+                  >
+                    <option value="">Pick a District</option>
+                    {districtsByRegion(riderRegion).map((r, i) => (
+                      <option key={i} value={r}>
+                        {r}
+                      </option>
+                    ))}
+                  </select>
+                  {errors.district && (
+                    <p className="text-red-500 text-sm">Select a district.</p>
+                  )}
+                </div>
+
+                <div>
+                  <label className="label">Rider Address</label>
+                  <input
+                    type="text"
+                    {...register('address', { required: true })}
+                    className="input input-bordered w-full"
+                    placeholder="Address"
+                  />
+                  {errors.address && (
+                    <p className="text-red-500 text-sm">Address is required.</p>
+                  )}
+                </div>
+              </div>
             </div>
 
+            {/* 🌳 More Details */}
             <div>
-              <label className="label">Your age</label>
-              <input
-                type="number"
-                {...register('age', { required: true, min: 16 })}
-                className="input input-bordered w-full"
-                placeholder="Your age"
-              />
-              {errors.age?.type === 'required' && (
-                <p className="text-red-500 text-sm">Age is required.</p>
-              )}
-              {errors.age?.type === 'min' && (
-                <p className="text-red-500 text-sm">Minimum age is 16.</p>
-              )}
-            </div>
+              <h3 className="text-lg font-semibold mb-4">More Details</h3>
 
-            <div>
-              <label className="label">Your Email</label>
-              <input
-                type="email"
-                {...register('email', { required: true })}
-                className="input input-bordered w-full"
-                placeholder="Your Email"
-              />
-              {errors.email && (
-                <p className="text-red-500 text-sm">Email is required.</p>
-              )}
-            </div>
+              <div className="space-y-4">
+                <div>
+                  <label className="label">Driving License</label>
+                  <input
+                    type="text"
+                    {...register('license', { required: true })}
+                    className="input input-bordered w-full"
+                    placeholder="Receiver Name"
+                  />
+                  {errors.license && (
+                    <p className="text-red-500 text-sm">
+                      Receiver name is required.
+                    </p>
+                  )}
+                </div>
 
-            <div>
-              <label className="label">Your District</label>
-              <select
-                {...register('district', { required: true })}
-                className="select select-bordered w-full"
-              >
-                <option value="">Select your District</option>
-                <option>Dhaka</option>
-                <option>Chattogram</option>
-                <option>Comilla</option>
-              </select>
-              {errors.district && (
-                <p className="text-red-500 text-sm">Select a district.</p>
-              )}
-            </div>
+                <div>
+                  <label className="label">NID</label>
+                  <input
+                    type="text"
+                    {...register('nid', { required: true })}
+                    className="input input-bordered w-full"
+                    placeholder="NID Number"
+                  />
+                  {errors.nid && (
+                    <p className="text-red-500 text-sm">Email is required.</p>
+                  )}
+                </div>
 
-            <div>
-              <label className="label">NID No</label>
-              <input
-                type="text"
-                {...register('nid', { required: true })}
-                className="input input-bordered w-full"
-                placeholder="NID"
-              />
-              {errors.nid && (
-                <p className="text-red-500 text-sm">NID is required.</p>
-              )}
-            </div>
-
-            <div>
-              <label className="label">Contact</label>
-              <input
-                type="tel"
-                {...register('contact', { required: true })}
-                className="input input-bordered w-full"
-                placeholder="Contact"
-              />
-              {errors.contact && (
-                <p className="text-red-500 text-sm">Contact is required.</p>
-              )}
+                <div>
+                  <label className="label">Bike Info</label>
+                  <input
+                    type="text"
+                    {...register('bike', { required: true })}
+                    className="input input-bordered w-full"
+                    placeholder="bike info"
+                  />
+                  {errors.bike && (
+                    <p className="text-red-500 text-sm">Address is required.</p>
+                  )}
+                </div>
+              </div>
             </div>
           </div>
 
-          <div>
-            <label className="label">Which wire-house you want to work?</label>
-            <select
-              {...register('warehouse', { required: true })}
-              className="select select-bordered w-full"
-            >
-              <option value="">Select wire-house</option>
-              <option>Warehouse A</option>
-              <option>Warehouse B</option>
-            </select>
-            {errors.warehouse && (
-              <p className="text-red-500 text-sm">Please select a warehouse.</p>
-            )}
-          </div>
+          <p className="text-sm text-gray-500 mt-6 mb-3">
+            * Pickup Time 4pm–7pm Approx
+          </p>
 
-          <button
-            type="submit"
-            className="btn bg-lime-500 text-white mt-4 w-full"
-          >
-            Submit
+          <button type="submit" className="btn bg-lime-500 text-white px-6">
+            apply as a Rider
           </button>
         </form>
       </div>

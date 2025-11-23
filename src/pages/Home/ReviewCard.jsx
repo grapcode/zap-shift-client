@@ -2,7 +2,7 @@ import { FaQuoteLeft } from 'react-icons/fa';
 
 const ReviewCard = ({ data }) => {
   const { userName, review, user_photoURL } = data;
-  console.log(data);
+  // console.log(data);
   return (
     <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200 max-w-sm ">
       {/* Quote Icon */}
