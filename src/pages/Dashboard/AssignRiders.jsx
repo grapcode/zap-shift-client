@@ -44,6 +44,7 @@ const AssignRiders = () => {
       riderEmail: rider.email,
       riderName: rider.name,
       parcelId: selectedParcel._id,
+      trackingId: selectedParcel.trackingId,
     };
     axiosSecure
       .patch(`/parcels/${selectedParcel._id}`, riderAssignInfo)
@@ -132,7 +133,7 @@ const AssignRiders = () => {
                   <tr key={rider._id}>
                     <th>{index + 1}</th>
                     <td>{rider.name}</td>
-                    <td>${rider.email}</td>
+                    <td>{rider.email}</td>
 
                     <td>
                       <button

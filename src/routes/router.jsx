@@ -19,6 +19,10 @@ import ApproveRider from '../pages/Dashboard/ApproveRider';
 import UsersManagement from '../pages/Dashboard/UsersManagement';
 import AdminRoute from './AdminRoute';
 import AssignRiders from '../pages/Dashboard/AssignRiders';
+import AssignedDeliveries from '../pages/Dashboard/AssignedDeliveries';
+import RiderRoute from './RiderRoute';
+import CompletedDeliveries from '../pages/Dashboard/CompletedDeliveries';
+import ParcelTrack from '../pages/parcelTrack/ParcelTrack';
 
 export const router = createBrowserRouter([
   {
@@ -37,6 +41,10 @@ export const router = createBrowserRouter([
       {
         path: '/aboutUS',
         element: <AboutUS />,
+      },
+      {
+        path: '/parcel-track/:trackingId',
+        element: <ParcelTrack />,
       },
       {
         path: '/rider',
@@ -109,6 +117,26 @@ export const router = createBrowserRouter([
         path: 'payment-history',
         element: <PaymentHistory />,
       },
+
+      // rider only routes
+      {
+        path: 'assigned-deliveries',
+        element: (
+          <RiderRoute>
+            <AssignedDeliveries />
+          </RiderRoute>
+        ),
+      },
+      {
+        path: 'completed-deliveries',
+        element: (
+          <RiderRoute>
+            <CompletedDeliveries />
+          </RiderRoute>
+        ),
+      },
+
+      // admin only routes
       {
         path: 'approve-riders',
         // element: <ApproveRider />,

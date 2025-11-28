@@ -56,6 +56,7 @@ const MyParcels = () => {
       parcelId: parcel._id,
       senderEmail: parcel.senderEmail,
       parcelName: parcel.parcelName,
+      trackingId: parcel.trackingId,
     };
 
     const res = await axiosSecure.post(
@@ -114,7 +115,12 @@ const MyParcels = () => {
                     </Link>
                   )}
                 </td> */}
-                <td>{parcel.trackingId}</td>
+
+                <td className="text-red-500">
+                  <Link to={`/parcel-track/${parcel.trackingId}`}>
+                    {parcel.trackingId}
+                  </Link>
+                </td>
                 <td>{parcel.deliveryStatus}</td>
                 <td className="space-x-2">
                   <button className="btn btn-square hover:bg-secondary">

@@ -3,9 +3,10 @@ import { Link, NavLink, Outlet } from 'react-router';
 import { CiDeliveryTruck } from 'react-icons/ci';
 import MyContainer from '../components/my-components/MyContainer';
 import { FaRegCreditCard, FaUsers } from 'react-icons/fa6';
-import { FaMotorcycle } from 'react-icons/fa';
+import { FaMotorcycle, FaTasks } from 'react-icons/fa';
 import useRole from '../hooks/useRole';
 import { RiEBikeFill } from 'react-icons/ri';
+import { SiGoogletasks } from 'react-icons/si';
 
 const DashboardLayout = () => {
   const { role } = useRole();
@@ -105,6 +106,38 @@ const DashboardLayout = () => {
                     </span>
                   </NavLink>
                 </li>
+                {role === 'rider' && (
+                  <>
+                    <li>
+                      <NavLink
+                        to="/dashboard/assigned-deliveries"
+                        className="is-drawer-close:tooltip is-drawer-close:tooltip-right"
+                        data-tip="Assigned Deliveries"
+                      >
+                        <FaTasks className="my-1.5 inline-block size-4" />
+
+                        <span className="is-drawer-close:hidden">
+                          Assigned Deliveries
+                        </span>
+                      </NavLink>
+                    </li>
+                    <li>
+                      <NavLink
+                        to="/dashboard/completed-deliveries"
+                        className="is-drawer-close:tooltip is-drawer-close:tooltip-right"
+                        data-tip="Completed Deliveries"
+                      >
+                        <SiGoogletasks className="my-1.5 inline-block size-4" />
+
+                        <span className="is-drawer-close:hidden">
+                          Completed Deliveries
+                        </span>
+                      </NavLink>
+                    </li>
+                  </>
+                )}
+
+                {/* admin only links */}
                 {role === 'admin' && (
                   <>
                     <li>
